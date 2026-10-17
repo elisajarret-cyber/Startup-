@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Bank of America - Online Banking</title>
+    <!-- Tailwind CSS for a professional, responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for authentic banking icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="bg-red-800 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center flex-wrap gap-2 py-2">
+                <!-- Brand / Logo Area -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white text-red-800 font-black px-2.5 py-1 rounded tracking-tighter text-lg shadow-sm">
+                        PBA
+                    </div>
+                    <div>
+                        <span class="font-bold text-base sm:text-lg tracking-wide block leading-none">Pedro Bank of America</span>
+                        <span class="text-[9px] text-red-200 uppercase tracking-widest font-medium">Member FDIC &bull; TM: NAN</span>
+                    </div>
+                </div>
+
+                <!-- Top Right Customer Care, Inbox & User Controls -->
+                <div class="flex items-center space-x-2 sm:space-x-3 flex-wrap">
+                    <button onclick="openModal('support')" class="flex items-center text-xs bg-red-900 hover:bg-red-950 text-red-100 px-3 py-1.5 rounded-md transition font-medium border border-red-700 shadow-sm">
+                        <i class="fa-solid fa-headset mr-1.5 text-white"></i> Customer Care
+                    </button>
+                    <button onclick="openModal('inbox')" class="relative flex items-center text-xs bg-red-900 hover:bg-red-950 text-red-100 px-3 py-1.5 rounded-md transition font-medium border border-red-700 shadow-sm">
+                        <i class="fa-solid fa-envelope mr-1.5 text-white"></i> Messages <span id="msg-badge" class="hidden ml-1.5 bg-amber-400 text-slate-950 text-[10px] font-bold px-1.5 rounded-full">1</span>
+                    </button>
+                    <div id="nav-user-section" class="flex items-center space-x-2 hidden">
+                        <span id="nav-user-email" class="text-xs text-red-100 hidden md:inline font-medium truncate max-w-[120px]"></span>
+                        <button onclick="logoutUser()" class="bg-red-900 hover:bg-red-950 text-xs px-2.5 py-1.5 rounded-md transition font-medium border border-red-700">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ACCOUNT STATUS BANNER (If frozen/held by admin) -->
+    <div id="account-status-banner" class="hidden bg-rose-600 text-white text-center py-2.5 px-4 text-xs font-semibold tracking-wide shadow-inner flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-triangle-exclamation text-amber-300 text-sm"></i>
+        <span>NOTICE: Your account is subject to a security hold. Please contact Customer Care.</span>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6">
+
+        <!-- 1. AUTHENTICATION VIEW (SIGN IN / SIGN UP) -->
+        <section id="auth-view" class="w-full max-w-md bg-white rounded-xl shadow-lg border border-slate-200 p-8">
+            <div class="text-center mb-6">
+                <h1 id="auth-title" class="text-2xl font-bold text-slate-900">Secure Sign In</h1>
+                <p id="auth-subtitle" class="text-sm text-slate-500 mt-1">Access your Pedro Bank of America profile</p>
+            </div>
+
+            <div id="auth-alert" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+            <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+                <div id="name-field-container" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Full Legal Name</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-regular fa-user"></i></span>
+                        <input type="text" id="signup-name" placeholder="Johnathan Doe" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-regular fa-envelope"></i></span>
+                        <input type="email" id="auth-email" required placeholder="name@example.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="auth-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800 focus:bg-white transition">
+                        <button type="button" onclick="togglePasswordVisibility('auth-password', 'toggle-pwd-icon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                            <i id="toggle-pwd-icon" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full bg-red-800 hover:bg-red-900 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-sm">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-sm border-t border-slate-100 pt-4">
+                <p id="auth-switch-text" class="text-slate-600">
+                    Don't have an account? 
+                    <button onclick="toggleAuthMode()" class="text-red-800 font-semibold hover:underline">Sign Up</button>
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. EMAIL VERIFICATION SIMULATOR VIEW -->
+        <section id="verification-view" class="hidden w-full max-w-md bg-white rounded-xl shadow-lg border border-slate-200 p-8 text-center">
+            <div class="w-16 h-16 bg-red-50 text-red-800 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-envelope-circle-check"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Verification Link Sent</h2>
+            <p class="text-sm text-slate-600 mb-6">A confirmation link has been securely dispatched to <span id="verify-target-email" class="font-semibold text-slate-800"></span>. Click below to verify and complete your registration.</p>
+            <button onclick="completeVerification()" class="w-full bg-red-800 hover:bg-red-900 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-sm">
+                Confirm & Access Account
+            </button>
+        </section>
+
+        <!-- 3. DASHBOARD VIEW (BANKING INTERFACE) -->
+        <section id="dashboard-view" class="hidden w-full max-w-6xl space-y-6">
+            
+            <!-- Top Banner & Balance Card -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Balance Summary Card -->
+                <div class="lg:col-span-2 bg-gradient-to-r from-red-900 via-red-800 to-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start flex-wrap gap-2">
+                            <span class="text-xs uppercase tracking-wider text-red-200 font-semibold">Advantage SafeAccess Checking •••• 8841</span>
+                            <span class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Active Status</span>
+                        </div>
+                        <h2 class="text-red-100 text-sm mt-4">Available Balance</h2>
+                        <div class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mt-1 truncate" id="display-balance">$700,000.00</div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-red-700/60 flex flex-wrap gap-3">
+                        <button onclick="openModal('withdraw')" class="bg-white hover:bg-slate-100 text-red-900 text-xs font-bold px-4 py-2.5 rounded-lg transition shadow-sm flex items-center">
+                            <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> Withdraw Funds
+                        </button>
+                        <button onclick="openModal('deposit')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold px-4 py-2.5 rounded-lg transition shadow-sm flex items-center">
+                            <i class="fa-brands fa-bitcoin mr-1.5 text-base"></i> Deposit Crypto ($200 - $1,000)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Two Debit Cards Container matching reference card styles exactly -->
+                <div class="flex flex-col space-y-4">
+                    <!-- Card 1: Standard Card matching layout style 1 (Black-to-Burgundy gradient with Bank Name & Logo) -->
+                    <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-red-950 rounded-2xl p-5 shadow-lg text-white flex flex-col justify-between border border-slate-800 relative overflow-hidden">
+                        <div class="flex justify-between items-center z-10">
+                            <div class="flex items-center space-x-1">
+                                <i class="fa-solid fa-shield-halved text-red-500 text-sm"></i>
+                                <span class="font-bold text-xs tracking-wider text-white">Pedro Bank</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-black text-xs tracking-tight text-white uppercase">PBA BANK</span>
+                            </div>
+                        </div>
+                        <div class="my-2 z-10 flex items-center justify-between">
+                            <div class="w-9 h-7 bg-amber-300 rounded flex items-center justify-center text-[8px] text-slate-900 font-bold shadow"><i class="fa-solid fa-sim-card"></i></div>
+                            <i class="fa-solid fa-wifi text-slate-300 text-sm"></i>
+                        </div>
+                        <div class="z-10 mb-1">
+                            <div class="text-xs sm:text-sm font-mono tracking-widest text-slate-100">4092 8841 7000 2901</div>
+                        </div>
+                        <div class="flex justify-between items-end text-[10px] z-10 pt-1.5 border-t border-slate-800">
+                            <div>
+                                <span class="text-[7px] text-slate-400 block uppercase">Cardholder</span>
+                                <span id="card-holder-name-1" class="font-bold tracking-wide text-white uppercase truncate max-w-[130px] block">VALUED CUSTOMER</span>
+                            </div>
+                            <div>
+                                <span class="text-[7px] text-slate-400 block uppercase font-bold tracking-widest text-red-400">VISA</span>
+                                <span class="text-[8px] font-mono text-slate-300">Signature</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: VIP Golden Card matching reference splash art style 2 -->
+                    <div class="bg-gradient-to-tr from-amber-700 via-yellow-600 to-amber-900 rounded-2xl p-5 shadow-xl text-white flex flex-col justify-between border border-amber-400/50 relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]"></div>
+                        <div class="flex justify-between items-center z-10">
+                            <div class="flex items-center space-x-1.5">
+                                <div class="bg-slate-950 text-amber-300 font-black text-[9px] px-1.5 py-0.5 rounded shadow">VIP</div>
+                                <span class="font-extrabold text-[11px] tracking-widest text-amber-100 uppercase">Pedro Gold Elite</span>
+                            </div>
+                            <i class="fa-solid fa-wifi text-amber-200 text-sm rotate-90"></i>
+                        </div>
+                        <div class="my-2 z-10">
+                            <div class="w-8 h-6 bg-gradient-to-r from-amber-200 to-yellow-100 rounded flex items-center justify-center text-[8px] text-slate-950 font-bold mb-1.5 shadow"><i class="fa-solid fa-sim-card"></i></div>
+                            <div class="text-xs sm:text-sm font-mono tracking-widest text-amber-50 drop-shadow">5588 9011 2044 7792</div>
+                        </div>
+                        <div class="flex justify-between items-end text-[10px] z-10 pt-1.5 border-t border-amber-600/40">
+                            <div>
+                                <span class="text-[7px] text-amber-200 block uppercase">VIP Cardholder</span>
+                                <span id="card-holder-name-2" class="font-bold tracking-wider text-amber-50 uppercase truncate max-w-[130px] block">VALUED CUSTOMER</span>
+                            </div>
+                            <div>
+                                <span class="text-[7px] text-amber-200 block uppercase">Exp</span>
+                                <span class="font-mono text-amber-100">12/30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History Panel -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 flex-wrap gap-2">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Transaction History</h3>
+                        <p class="text-xs text-slate-500">Click any transaction row below to instantly view and generate its official receipt</p>
+                    </div>
+                    <span class="bg-slate-200/70 text-slate-700 text-xs px-2.5 py-1 rounded-full font-semibold">Ledger Active</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm min-w-[550px]">
+                        <thead>
+                            <tr class="bg-slate-50/80 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-100">
+                                <th class="py-3 px-6">Description</th>
+                                <th class="py-3 px-6">Source / Bank Details</th>
+                                <th class="py-3 px-6">Type</th>
+                                <th class="py-3 px-6">Date</th>
+                                <th class="py-3 px-6 text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-table-body" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL POPUPS (WITHDRAWAL, DEPOSIT, SUPPORT, INBOX, ADMIN, RECEIPTS) -->
+    <div id="app-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 border border-slate-200 my-8">
+            
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 id="modal-title" class="font-bold text-slate-800">Modal Title</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="p-6">
+                <div id="modal-alert" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+                <!-- 1. Withdrawal Form -->
+                <div id="modal-content-withdraw" class="hidden">
+                    <form onsubmit="handleWithdrawal(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Destination Category</label>
+                            <select id="withdrawal-category" onchange="updateInstitutionDropdown()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800">
+                                <option value="Local Bank">Local Bank (Major US Bank)</option>
+                                <option value="Credit Union">Credit Union</option>
+                                <option value="Online Payment Platform">Online Payment Platform</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Institution / Platform</label>
+                            <select id="withdrawal-institution" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800">
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Account Number / User Handle</label>
+                            <input type="text" id="withdrawal-dest" required placeholder="Enter Account ID or Handle" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Amount ($)</label>
+                            <input type="number" id="withdrawal-amount" min="1" max="700000" step="0.01" required placeholder="0.00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-800">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-red-800 uppercase mb-1">Withdrawal Code Required</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-shield-keyhole"></i></span>
+                                <input type="text" id="withdrawal-code" required placeholder="Enter Withdrawal Code" class="w-full pl-10 pr-4 py-2.5 bg-red-50/50 border border-red-300 rounded-lg text-sm font-mono font-semibold tracking-wide text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-800">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-red-800 hover:bg-red-900 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-sm mt-2">
+                            Submit Withdrawal (Generate Receipt)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. Crypto Deposit Form ($200 to $1000) -->
+                <div id="modal-content-deposit" class="hidden space-y-4">
+                    <div class="text-center">
+                        <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl shadow-inner border border-amber-200">
+                            <i class="fa-brands fa-bitcoin"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">Bitcoin (BTC) Deposit Gateway</h4>
+                        <p class="text-xs text-slate-500 mt-1">Allowed range: <strong class="text-slate-800">$200.00 to $1,000.00</strong></p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Official Deposit Bitcoin Wallet</span>
+                        <div class="flex items-center justify-between bg-white px-3 py-2 rounded border border-slate-300">
+                            <span id="btc-wallet-text" class="font-mono text-xs text-slate-800 font-semibold select-all">15vEpc5tUaN42MxHpTMqcYAT6Ra6fXU3dr</span>
+                            <button onclick="copyBtcWallet()" class="text-xs bg-slate-800 hover:bg-slate-900 text-white px-2.5 py-1 rounded transition"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleCryptoDeposit(event)" class="space-y-3 pt-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Deposit Amount ($USD)</label>
+                            <input type="number" id="deposit-amount" min="200" max="1000" step="0.01" required placeholder="500.00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <span class="text-[10px] text-slate-400 mt-0.5 block">Minimum $200, Maximum $1,000</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Transaction ID / Reference Number</label>
+                            <input type="text" id="deposit-txid" required placeholder="Enter Transaction ID or Reference #" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-lg text-sm transition shadow-sm">
+                            Confirm Deposit & Generate Receipt
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 3. Customer Care Support Content -->
+                <div id="modal-content-support" class="hidden text-center space-y-4">
+                    <div class="w-12 h-12 bg-red-50 text-red-800 rounded-full flex items-center justify-center mx-auto text-xl">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <p class="text-sm text-slate-600">Pedro Bank of America Client Care is available 24/7 for security, wire inquiries, and account assistance.</p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2.5 text-sm">
+                        <div class="flex items-center text-slate-700"><i class="fa-solid fa-phone text-red-800 w-6"></i> <span class="font-medium">1-800-432-1000 (PBA Direct)</span></div>
+                        <div class="flex items-center text-slate-700"><i class="fa-solid fa-envelope text-red-800 w-6"></i> <span class="font-medium">support@pedrobankofamerica.com</span></div>
+                        <div class="flex items-center text-slate-700"><i class="fa-solid fa-comments text-red-800 w-6"></i> <span class="font-medium">Secure Live Chat (Online)</span></div>
+                    </div>
+                    <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm transition">
+                        Close
+                    </button>
+                </div>
+
+                <!-- 4. INBOX & ADMIN MESSAGING CHAT -->
+                <div id="modal-content-inbox" class="hidden space-y-4">
+                    <div class="flex justify-between items-center bg-slate-900 text-white p-3 rounded-lg text-xs">
+                        <span class="font-bold flex items-center"><i class="fa-solid fa-comments text-amber-400 mr-2"></i> Secure Inbox & Admin Support Chat</span>
+                        <span class="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">ONLINE</span>
+                    </div>
+
+                    <div id="chat-messages-container" class="h-64 overflow-y-auto space-y-3 p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <form onsubmit="sendClientMessage(event)" class="flex gap-2">
+                        <input type="text" id="client-msg-input" required placeholder="Type a message to bank support..." class="flex-grow px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-800">
+                        <button type="submit" class="bg-red-800 hover:bg-red-900 text-white font-semibold px-4 py-2 rounded-lg text-xs transition">
+                            Send
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 5. TRANSACTION RECEIPT POPUP VIEW -->
+                <div id="modal-content-receipt" class="hidden space-y-4 text-center">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl border border-emerald-200">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-base" id="receipt-title">Transaction Receipt</h4>
+                    
+                    <div id="receipt-body" class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2 text-xs font-mono">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg text-amber-800 text-xs font-semibold text-center" id="receipt-status-note">
+                        Awaiting confirmation from bank / blockchain.
+                    </div>
+
+                    <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm transition">
+                        Done / Close
+                    </button>
+                </div>
+
+                <!-- 6. WELCOME ONBOARDING POPUP MESSAGE -->
+                <div id="modal-content-welcome-popup" class="hidden space-y-4 text-left">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="w-12 h-12 bg-red-800 text-white rounded-xl flex items-center justify-center text-xl shadow-md">
+                            <i class="fa-solid fa-champagne-glasses"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Welcome to Pedro Bank!</h2>
+                            <span class="text-[10px] text-red-800 font-semibold uppercase tracking-wider">Account Successfully Opened</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Dear <span id="popup-welcome-name" class="font-semibold text-slate-800">Valued Client</span>, your account has been successfully initialized with <strong class="text-slate-900">$700,000.00</strong> starting secure balance.
+                    </p>
+
+                    <div class="bg-red-50/80 border border-red-200 rounded-xl p-3 space-y-1.5 text-xs">
+                        <div class="font-bold text-red-900 uppercase tracking-wide flex items-center text-[10px]">
+                            <i class="fa-solid fa-shield-halved mr-1.5"></i> Welcome Email & Credentials Record
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-red-200/50">
+                            <span class="text-slate-500">Email:</span>
+                            <span id="popup-welcome-email" class="font-mono font-semibold text-slate-800"></span>
+                        </div>
+                        <div class="flex justify-between py-1">
+                            <span class="text-slate-500">Password:</span>
+                            <span id="popup-welcome-password" class="font-mono font-semibold text-red-800"></span>
+                        </div>
+                    </div>
+
+                    <button onclick="proceedToDashboardFromWelcome()" class="w-full bg-red-800 hover:bg-red-900 text-white font-semibold py-2.5 rounded-lg text-xs transition">
+                        Proceed to Dashboard
+                    </button>
+                </div>
+
+                <!-- 7. HIDDEN COMPLEX ADMIN PANEL -->
+                <div id="modal-content-admin" class="hidden space-y-4">
+                    <div class="bg-slate-900 text-white p-3 rounded-lg text-xs flex justify-between items-center">
+                        <span class="font-bold flex items-center"><i class="fa-solid fa-user-shield text-amber-400 mr-2"></i> Master Admin Control Portal</span>
+                        <span class="bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded font-mono">RESTRICTED</span>
+                    </div>
+
+                    <div id="admin-no-client" class="text-center py-6 text-slate-500 text-sm">
+                        No active client profile registered in local session storage yet.
+                    </div>
+
+                    <div id="admin-client-data" class="hidden space-y-3 text-sm">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1.5">
+                            <div class="text-[10px] uppercase font-bold text-slate-400">Client Account Record</div>
+                            <div class="flex justify-between text-xs py-1 border-b border-slate-200">
+                                <span class="text-slate-500 font-medium">Full Name:</span>
+                                <span id="admin-view-name" class="font-bold text-slate-800"></span>
+                            </div>
+                            <div class="flex justify-between text-xs py-1 border-b border-slate-200">
+                                <span class="text-slate-500 font-medium">Email Address:</span>
+                                <span id="admin-view-email" class="font-semibold text-slate-800"></span>
+                            </div>
+                            <div class="flex justify-between text-xs py-1">
+                                <span class="text-slate-500 font-medium">Password:</span>
+                                <span id="admin-view-password" class="font-mono font-bold text-red-800 bg-red-50 px-2 py-0.5 rounded"></span>
+                            </div>
+                        </div>
+
+                        <!-- Pending Items Management -->
+                        <div class="space-y-2">
+                            <span class="text-xs font-semibold text-slate-700 block uppercase">Pending Transactions Verification</span>
+                            <div id="admin-pending-list" class="max-h-36 overflow-y-auto space-y-2 border border-slate-200 p-2 rounded bg-slate-50 text-xs">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Admin Messaging Control -->
+                        <div class="space-y-2">
+                            <span class="text-xs font-semibold text-slate-700 block uppercase">Send Reply / Chat to Customer</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="admin-msg-input" placeholder="Type support reply..." class="flex-grow px-3 py-1.5 bg-white border border-slate-300 rounded text-xs">
+                                <button onclick="sendAdminMessage()" class="bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-semibold">Reply</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 pt-1">
+                            <label class="block text-xs font-semibold text-slate-600 uppercase">Master Account Controls</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="setAccountStatus('active')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg text-xs transition">
+                                    <i class="fa-solid fa-check-circle mr-1"></i> Unlock / Active
+                                </button>
+                                <button onclick="setAccountStatus('hold')" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 rounded-lg text-xs transition">
+                                    <i class="fa-solid fa-ban mr-1"></i> Full Account Hold
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm transition mt-2">
+                        Close Admin Portal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER WITH HIDDEN TRIPLE-CLICK ADMIN TRIGGER -->
+    <footer onclick="handleFooterClick()" class="py-6 text-center text-xs text-slate-500 border-t border-slate-200 bg-white cursor-pointer select-none">
+        &copy; 2004-2026 Pedro Bank of America, N.A. Member FDIC. Equal Housing Lender. All rights reserved. TM: NAN
+    </footer>
+
+    <!-- JAVASCRIPT CONTROLLER -->
+    <script>
+        let isSignUpMode = false;
+        let currentUser = null;
+        let currentBalance = 700000.00;
+        let accountStatus = 'active';
+        
+        let transactions = [
+            { id: 101, description: 'Incoming Wire Transfer - Corporate Acquisition', sourceBank: 'Bank of America - New York, NY', type: 'Credit', date: 'Oct 14, 2026', amount: '+$350,000.00', positive: true, status: 'Completed', rawAmount: 350000 },
+            { id: 102, description: 'Quarterly Investment Dividend Distribution', sourceBank: 'Chase Bank - Chicago, IL', type: 'Credit', date: 'Oct 11, 2026', amount: '+$45,000.00', positive: true, status: 'Completed', rawAmount: 45000 },
+            { id: 103, description: 'Commercial Real Estate Payout', sourceBank: 'Wells Fargo - San Francisco, CA', type: 'Credit', date: 'Oct 08, 2026', amount: '+$125,000.00', positive: true, status: 'Completed', rawAmount: 125000 },
+            { id: 104, description: 'Private Wealth Management Service Fee', sourceBank: 'Pedro Bank Clearing - Boston, MA', type: 'Debit', date: 'Oct 01, 2026', amount: '-$550.00', positive: false, status: 'Completed', rawAmount: 550 }
+        ];
+
+        let messages = [
+            { sender: 'bank', text: 'Welcome to Pedro Bank of America! Your secure high-yield checking account is active.' }
+        ];
+
+        let footerClicks = 0;
+        let footerTimer = null;
+
+        function handleFooterClick() {
+            footerClicks++;
+            if (footerClicks === 1) {
+                footerTimer = setTimeout(() => { footerClicks = 0; }, 600);
+            } else if (footerClicks === 3) {
+                clearTimeout(footerTimer);
+                footerClicks = 0;
+                openModal('admin');
+            }
+        }
+
+        const institutions = {
+            "Local Bank": ["Bank of America (BOA)", "TD Bank", "Wells Fargo", "Chase Bank", "Citibank", "U.S. Bank", "PNC Bank", "Capital One"],
+            "Credit Union": ["Navy Federal Credit Union", "SECU", "PenFed", "Alliant Credit Union", "SchoolsFirst FCU"],
+            "Online Payment Platform": ["Zelle", "Cash App", "Venmo", "Chime", "PayPal", "Wise"]
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('pba_user');
+            const savedStatus = localStorage.getItem('pba_status');
+            const savedTx = localStorage.getItem('pba_tx');
+            const savedBal = localStorage.getItem('pba_bal');
+            const savedMsgs = localStorage.getItem('pba_msgs');
+
+            if (savedUser) currentUser = JSON.parse(savedUser);
+            if (savedStatus) accountStatus = savedStatus;
+            if (savedTx) transactions = JSON.parse(savedTx);
+            if (savedBal) currentBalance = parseFloat(savedBal);
+            if (savedMsgs) messages = JSON.parse(savedMsgs);
+
+            if (currentUser) {
+                showDashboard();
+            }
+            updateInstitutionDropdown();
+        });
+
+        function saveState() {
+            localStorage.setItem('pba_tx', JSON.stringify(transactions));
+            localStorage.setItem('pba_bal', currentBalance);
+            localStorage.setItem('pba_status', accountStatus);
+            localStorage.setItem('pba_msgs', JSON.stringify(messages));
+            if (currentUser) localStorage.setItem('pba_user', JSON.stringify(currentUser));
+        }
+
+        function updateInstitutionDropdown() {
+            const categorySelect = document.getElementById('withdrawal-category');
+            const institutionSelect = document.getElementById('withdrawal-institution');
+            if (!categorySelect || !institutionSelect) return;
+            const selectedCategory = categorySelect.value;
+            
+            institutionSelect.innerHTML = '';
+            const list = institutions[selectedCategory] || [];
+            list.forEach(inst => {
+                const opt = document.createElement('option');
+                opt.value = inst;
+                opt.innerText = inst;
+                institutionSelect.appendChild(opt);
+            });
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const pwdInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                pwdInput.type = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        }
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const switchText = document.getElementById('auth-switch-text');
+            const nameContainer = document.getElementById('name-field-container');
+            
+            hideAlert('auth-alert');
+
+            if (isSignUpMode) {
+                title.innerText = "Create Account";
+                subtitle.innerText = "Open your Pedro Bank of America profile";
+                submitBtn.innerText = "Continue to Verification";
+                nameContainer.classList.remove('hidden');
+                switchText.innerHTML = `Already have an account? <button onclick="toggleAuthMode()" class="text-red-800 font-semibold hover:underline">Sign In</button>`;
+            } else {
+                title.innerText = "Secure Sign In";
+                subtitle.innerText = "Access your Pedro Bank of America profile";
+                submitBtn.innerText = "Sign In";
+                nameContainer.classList.add('hidden');
+                switchText.innerHTML = `Don't have an account? <button onclick="toggleAuthMode()" class="text-red-800 font-semibold hover:underline">Sign Up</button>`;
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const fullName = document.getElementById('signup-name').value.trim();
+
+            if (isSignUpMode) {
+                if (!fullName) {
+                    showAlert('auth-alert', 'Please enter your full legal name.', 'error');
+                    return;
+                }
+                window.pendingUser = { email, password, fullName };
+                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('verification-view').classList.remove('hidden');
+                document.getElementById('verify-target-email').innerText = email;
+            } else {
+                currentUser = { email, password, fullName: email.split('@')[0].toUpperCase() };
+                saveState();
+                showDashboard();
+            }
+        }
+
+        function completeVerification() {
+            document.getElementById('verification-view').classList.add('hidden');
+            if (window.pendingUser) {
+                currentUser = window.pendingUser;
+                window.pendingUser = null;
+            }
+            saveState();
+
+            // Populate Welcome Onboarding Popup
+            document.getElementById('popup-welcome-name').innerText = currentUser.fullName || "VALUED CLIENT";
+            document.getElementById('popup-welcome-email').innerText = currentUser.email;
+            document.getElementById('popup-welcome-password').innerText = currentUser.password;
+
+            const modal = document.getElementById('app-modal');
+            document.getElementById('modal-title').innerText = "Welcome Aboard";
+            document.querySelectorAll('#app-modal .p-6 > div').forEach(el => el.classList.add('hidden'));
+            document.getElementById('modal-content-welcome-popup').classList.remove('hidden');
+            modal.classList.remove('hidden');
+        }
+
+        function proceedToDashboardFromWelcome() {
+            closeModal();
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('verification-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            document.getElementById('nav-user-section').classList.remove('hidden');
+            document.getElementById('nav-user-email').innerText = currentUser.email;
+            
+            const formattedName = (currentUser.fullName || "VALUED CUSTOMER").toUpperCase();
+            document.getElementById('card-holder-name-1').innerText = formattedName;
+            document.getElementById('card-holder-name-2').innerText = formattedName;
+            
+            updateBalanceDisplay();
+            renderTransactions();
+            checkAccountHoldStatus();
+            updateMessageBadge();
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('pba_user');
+            currentUser = null;
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('nav-user-section').classList.add('hidden');
+            document.getElementById('auth-view').classList.remove('hidden');
+            document.getElementById('auth-form').reset();
+            if (isSignUpMode) toggleAuthMode();
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('display-balance').innerText = '$' + currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transaction-table-body');
+            tbody.innerHTML = '';
+            transactions.forEach(tx => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition cursor-pointer";
+                tr.onclick = () => openTransactionReceipt(tx.id);
+                
+                let amountClass = tx.positive ? 'text-emerald-600' : 'text-slate-800';
+                if (tx.status === 'Pending') {
+                    amountClass = 'text-amber-600 font-bold';
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-6 font-medium text-slate-800">
+                        ${tx.description}
+                        <div class="text-[10px] text-slate-400">Click to view official receipt</div>
+                    </td>
+                    <td class="py-3.5 px-6 text-xs text-slate-600 font-mono">
+                        <i class="fa-solid fa-building-columns text-red-800 mr-1"></i> ${tx.sourceBank || 'Pedro Bank Clearing House'}
+                    </td>
+                    <td class="py-3.5 px-6">
+                        <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-md font-medium">${tx.type}</span>
+                        ${tx.status === 'Pending' ? '<span class="ml-1 bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold">Pending</span>' : '<span class="ml-1 bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">Verified</span>'}
+                    </td>
+                    <td class="py-3.5 px-6 text-slate-500 text-xs">${tx.date}</td>
+                    <td class="py-3.5 px-6 text-right font-semibold ${amountClass}">${tx.amount}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openModal(type) {
+            const modal = document.getElementById('app-modal');
+            const title = document.getElementById('modal-title');
+            const withdrawContent = document.getElementById('modal-content-withdraw');
+            const depositContent = document.getElementById('modal-content-deposit');
+            const supportContent = document.getElementById('modal-content-support');
+            const inboxContent = document.getElementById('modal-content-inbox');
+            const adminContent = document.getElementById('modal-content-admin');
+            
+            hideAlert('modal-alert');
+            withdrawContent.classList.add('hidden');
+            depositContent.classList.add('hidden');
+            supportContent.classList.add('hidden');
+            inboxContent.classList.add('hidden');
+            adminContent.classList.add('hidden');
+            document.getElementById('modal-content-receipt').classList.add('hidden');
+            document.getElementById('modal-content-welcome-popup').classList.add('hidden');
+
+            if (type === 'withdraw') {
+                title.innerText = "Secure Fund Withdrawal";
+                withdrawContent.classList.remove('hidden');
+            } else if (type === 'deposit') {
+                title.innerText = "Cryptocurrency Deposit Gateway";
+                depositContent.classList.remove('hidden');
+            } else if (type === 'support') {
+                title.innerText = "Client Care Support";
+                supportContent.classList.remove('hidden');
+            } else if (type === 'inbox') {
+                title.innerText = "Secure Client Inbox & Support Chat";
+                inboxContent.classList.remove('hidden');
+                renderChatMessages();
+            } else if (type === 'admin') {
+                title.innerText = "Master Admin Portal";
+                adminContent.classList.remove('hidden');
+                populateAdminPanel();
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('app-modal').classList.add('hidden');
+        }
+
+        function copyBtcWallet() {
+            const walletText = document.getElementById('btc-wallet-text').innerText;
+            navigator.clipboard.writeText(walletText);
+            showAlert('modal-alert', 'Bitcoin wallet address copied to clipboard!', 'success');
+        }
+
+        function handleWithdrawal(e) {
+            e.preventDefault();
+            const category = document.getElementById('withdrawal-category').value;
+            const institution = document.getElementById('withdrawal-institution').value;
+            const dest = document.getElementById('withdrawal-dest').value;
+            const amountInput = parseFloat(document.getElementById('withdrawal-amount').value);
+            const inputCode = document.getElementById('withdrawal-code').value.trim();
+
+            if (inputCode !== "GLAD29VH") {
+                showAlert('modal-alert', 'Invalid withdrawal security code.', 'error');
+                return;
+            }
+
+            if (isNaN(amountInput) || amountInput <= 0) {
+                showAlert('modal-alert', 'Please enter a valid withdrawal amount.', 'error');
+                return;
+            }
+
+            if (amountInput > currentBalance) {
+                showAlert('modal-alert', 'Insufficient available funds for this transfer.', 'error');
+                return;
+            }
+
+            const options = { month: 'short', day: '2-digit', year: 'numeric' };
+            const formattedDate = new Date().toLocaleDateString('en-US', options);
+
+            const tx = {
+                id: Date.now(),
+                description: `Withdrawal to ${institution} (${dest})`,
+                sourceBank: `Pedro Bank Main Vault - State HQ`,
+                type: 'Withdrawal',
+                date: formattedDate,
+                amount: `-$${amountInput.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                positive: false,
+                status: 'Pending',
+                rawAmount: amountInput
+            };
+
+            transactions.unshift(tx);
+            saveState();
+            renderTransactions();
+
+            showReceiptModal("Withdrawal Receipt", tx, "Awaiting confirmation from bank.");
+        }
+
+        function handleCryptoDeposit(e) {
+            e.preventDefault();
+            const amountInput = parseFloat(document.getElementById('deposit-amount').value);
+            const txid = document.getElementById('deposit-txid').value.trim();
+
+            if (isNaN(amountInput) || amountInput < 200 || amountInput > 1000) {
+                showAlert('modal-alert', 'Deposit amount must be between $200.00 and $1,000.00.', 'error');
+                return;
+            }
+
+            const options = { month: 'short', day: '2-digit', year: 'numeric' };
+            const formattedDate = new Date().toLocaleDateString('en-US', options);
+
+            const tx = {
+                id: Date.now(),
+                description: `Crypto Deposit BTC [Ref/ID: ${txid}]`,
+                sourceBank: `State Blockchain Network Gateway`,
+                type: 'Deposit',
+                date: formattedDate,
+                amount: `+$${amountInput.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                positive: true,
+                status: 'Pending',
+                rawAmount: amountInput
+            };
+
+            transactions.unshift(tx);
+            saveState();
+            renderTransactions();
+
+            showReceiptModal("Crypto Deposit Receipt", tx, "Awaiting confirmation from blockchain.");
+        }
+
+        function openTransactionReceipt(txId) {
+            const tx = transactions.find(t => t.id === txId);
+            if (!tx) return;
+
+            const modal = document.getElementById('app-modal');
+            document.getElementById('modal-title').innerText = "Official Transaction Receipt";
+            document.querySelectorAll('#app-modal .p-6 > div').forEach(el => el.classList.add('hidden'));
+
+            const receiptBody = document.getElementById('receipt-body');
+            receiptBody.innerHTML = `
+                <div><strong>Transaction ID:</strong> PBA-TX-${tx.id}</div>
+                <div><strong>Description:</strong> ${tx.description}</div>
+                <div><strong>Originating Bank / Source:</strong> ${tx.sourceBank || 'State Central Clearing House'}</div>
+                <div><strong>Type:</strong> ${tx.type}</div>
+                <div><strong>Amount:</strong> ${tx.amount}</div>
+                <div><strong>Date:</strong> ${tx.date}</div>
+                <div><strong>Status:</strong> <span class="${tx.status === 'Completed' ? 'text-emerald-600' : 'text-amber-600'} font-bold">${tx.status}</span></div>
+            `;
+            
+            const noteEl = document.getElementById('receipt-status-note');
+            if (tx.status === 'Completed') {
+                noteEl.className = "bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-emerald-800 text-xs font-semibold text-center";
+                noteEl.innerText = "Transaction successfully processed and verified across state clearing networks.";
+            } else {
+                noteEl.className = "bg-amber-50 border border-amber-200 p-3 rounded-lg text-amber-800 text-xs font-semibold text-center";
+                noteEl.innerText = "Awaiting confirmation from bank / blockchain.";
+            }
+
+            document.getElementById('modal-content-receipt').classList.remove('hidden');
+            modal.classList.remove('hidden');
+        }
+
+        function showReceiptModal(titleText, tx, noteText) {
+            document.getElementById('modal-title').innerText = titleText;
+            document.querySelectorAll('#app-modal .p-6 > div').forEach(el => el.classList.add('hidden'));
+            
+            const receiptBody = document.getElementById('receipt-body');
+            receiptBody.innerHTML = `
+                <div><strong>Transaction ID:</strong> PBA-TX-${tx.id}</div>
+                <div><strong>Description:</strong> ${tx.description}</div>
+                <div><strong>Originating Bank / Source:</strong> ${tx.sourceBank}</div>
+                <div><strong>Amount:</strong> ${tx.amount}</div>
+                <div><strong>Date:</strong> ${tx.date}</div>
+                <div><strong>Status:</strong> <span class="text-amber-600 font-bold">Pending Approval</span></div>
+            `;
+            document.getElementById('receipt-status-note').className = "bg-amber-50 border border-amber-200 p-3 rounded-lg text-amber-800 text-xs font-semibold text-center";
+            document.getElementById('receipt-status-note').innerText = noteText;
+            document.getElementById('modal-content-receipt').classList.remove('hidden');
+        }
+
+        // Chat & Messaging Functions
+        function renderChatMessages() {
+            const container = document.getElementById('chat-messages-container');
+            container.innerHTML = '';
+            messages.forEach(m => {
+                const div = document.createElement('div');
+                if (m.sender === 'bank') {
+                    div.className = "bg-red-50 border border-red-200 p-2.5 rounded-lg text-slate-800";
+                    div.innerHTML = `<strong class="text-red-900 block text-[10px] uppercase">Pedro Bank Support:</strong> ${m.text}`;
+                } else {
+                    div.className = "bg-slate-200 p-2.5 rounded-lg text-slate-800 text-right";
+                    div.innerHTML = `<strong class="text-slate-900 block text-[10px] uppercase">You:</strong> ${m.text}`;
+                }
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendClientMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('client-msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            messages.push({ sender: 'client', text: text });
+            input.value = '';
+            saveState();
+            renderChatMessages();
+        }
+
+        function sendAdminMessage() {
+            const input = document.getElementById('admin-msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            messages.push({ sender: 'bank', text: text });
+            input.value = '';
+            saveState();
+            updateMessageBadge();
+            alert('Reply sent to customer inbox successfully!');
+        }
+
+        function updateMessageBadge() {
+            const badge = document.getElementById('msg-badge');
+            if (messages.length > 0 && messages[messages.length - 1].sender === 'bank') {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Admin Panel: Populate Client Info & Pending Requests
+        function populateAdminPanel() {
+            const noClientDiv = document.getElementById('admin-no-client');
+            const dataDiv = document.getElementById('admin-client-data');
+            const pendingList = document.getElementById('admin-pending-list');
+
+            if (!currentUser) {
+                noClientDiv.classList.remove('hidden');
+                dataDiv.classList.add('hidden');
+                return;
+            }
+
+            noClientDiv.classList.add('hidden');
+            dataDiv.classList.remove('hidden');
+            document.getElementById('admin-view-name').innerText = currentUser.fullName || "N/A";
+            document.getElementById('admin-view-email').innerText = currentUser.email || "N/A";
+            document.getElementById('admin-view-password').innerText = currentUser.password || "••••••••";
+
+            // Render Pending list
+            pendingList.innerHTML = '';
+            const pendings = transactions.filter(t => t.status === 'Pending');
+            if (pendings.length === 0) {
+                pendingList.innerHTML = '<p class="text-slate-400 text-center py-2">No pending transactions requiring verification.</p>';
+                return;
+            }
+
+            pendings.forEach(p => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2 rounded border border-slate-200";
+                item.innerHTML = `
+                    <div>
+                        <span class="font-bold text-slate-800 block">${p.description}</span>
+                        <span class="text-[10px] text-slate-500">${p.amount} &bull; ${p.sourceBank}</span>
+                    </div>
+                    <button onclick="approveTransaction(${p.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded text-[11px] font-semibold">
+                        Approve
+                    </button>
+                `;
+                pendingList.appendChild(item);
+            });
+        }
+
+        function approveTransaction(txId) {
+            const tx = transactions.find(t => t.id === txId);
+            if (!tx) return;
+
+            tx.status = 'Completed';
+            if (tx.type === 'Deposit') {
+                currentBalance += tx.rawAmount;
+            } else if (tx.type === 'Withdrawal') {
+                currentBalance -= tx.rawAmount;
+            }
+
+            saveState();
+            updateBalanceDisplay();
+            renderTransactions();
+            populateAdminPanel();
+            showAlert('modal-alert', 'Transaction successfully verified, approved, and updated on ledger!', 'success');
+        }
+
+        function setAccountStatus(status) {
+            accountStatus = status;
+            saveState();
+            checkAccountHoldStatus();
+            if (status === 'hold') {
+                showAlert('modal-alert', 'Account placed on security hold successfully.', 'error');
+            } else {
+                showAlert('modal-alert', 'Account status restored to active.', 'success');
+            }
+        }
+
+        function checkAccountHoldStatus() {
+            const banner = document.getElementById('account-status-banner');
+            if (accountStatus === 'hold') {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertBox = document.getElementById(elementId);
+            if (!alertBox) return;
+            alertBox.classList.remove('hidden');
+            if (type === 'error') {
+                alertBox.className = "mb-4 p-3 rounded-lg text-sm bg-rose-50 text-rose-700 border border-rose-200";
+            } else {
+                alertBox.className = "mb-4 p-3 rounded-lg text-sm bg-emerald-50 text-emerald-700 border border-emerald-200";
+            }
+            alertBox.innerText = message;
+        }
+
+        function hideAlert(elementId) {
+            const alertBox = document.getElementById(elementId);
+            if (alertBox) alertBox.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
